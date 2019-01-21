@@ -10,6 +10,7 @@
 #include <thread>
 #include "msg.h"
 #include <boost/algorithm/string/classification.hpp>
+#include "LogInfo.h"
 
 class InfoGenerator
 {
@@ -55,7 +56,11 @@ public:
             iopair.PushBack(rapidjson::Value(io.first.c_str(),msg.getAllocator()),msg.getAllocator());
             iopair.PushBack(rapidjson::Value(io.second.c_str(),msg.getAllocator()),msg.getAllocator());
             msg.add("IOInfo",iopair);
-
+			auto net = getNetInfo();
+			rapidjson::Value netpair(rapidjson::kArrayType);
+			netpair.PushBack(rapidjson::Value(net.first.c_str(), msg.getAllocator()), msg.getAllocator());
+			netpair.PushBack(rapidjson::Value(net.second.c_str(), msg.getAllocator()), msg.getAllocator());
+			msg.add("NetInfo", netpair);
 			info = msg.getString();
 			std::this_thread::sleep_for(100ms);
 		}
@@ -96,6 +101,21 @@ public:
         split_regex(result, s,boost::regex(" +"));
         return std::make_pair(result[5],result[6]);
     }
+
+	std::pair<std::string,std::string> getNetInfo()
+	{
+		system("rm net.info");
+		system("(ifstat 1 1) >> net.info");
+		std::string s;
+		std::ifstream in("net.info");
+		std::getline(in, s);
+		std::getline(in, s);
+		std::getline(in, s);
+		std::vector < std::string > result;
+		split_regex(result, s, boost::regex(" +"));
+		return std::make_pair(result[1], result[2]);
+	}
+
 	void start() {
 		std::thread t(std::bind(&InfoGenerator::generate,this));
 		t.detach();
