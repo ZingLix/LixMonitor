@@ -14,7 +14,7 @@
 #include <boost/archive/iterators/transform_width.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include  <cstdint> 
+#include  <cstdint>
 #include <string>
 using namespace boost::asio;
 using namespace boost::beast;
@@ -48,7 +48,7 @@ void User::on_read(const boost::system::error_code & err, size_t bytes) {
 		}
 		stop();
 		return;
-	} 
+	}
 	std::string msg;
 	{
 		std::lock_guard<std::mutex> guard(read_mutex_);
@@ -97,9 +97,20 @@ std::string Base64Encode(const std::string& s)
 }
 
 void User::msg_exec(json_message& msg) {
-	
+    switch(msg.getInt("type")){
+        case 1:
+            return_Appinfo();
+            break;
+        default:
+            break;
+    }
 }
 
+void User::return_Appinfo(){
+    auto s=server_->get_Appinfo();
+
+    do_write(s);
+}
 
 void User::ws_new(std::string msg) {
 	auto it = msg.find("Sec-WebSocket-Key: ");

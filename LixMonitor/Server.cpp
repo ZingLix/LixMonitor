@@ -18,10 +18,11 @@ Server::Server(ip::tcp::endpoint ep)
 }
 
 
-void Server::start(const InfoGenerator& g) {
+void Server::start() {
 	updateAcceptor();
 	LOG_INFO << "Server running on "<< acceptor_.local_endpoint().port();
-	std::thread t([&]()
+	g.start();
+    std::thread t([&]()
 		{
 			while (true) {
 				for (auto& soc : vistor_list_) {
@@ -33,7 +34,6 @@ void Server::start(const InfoGenerator& g) {
 		});
 	t.detach();
 	context_.run();
-	
 }
 
 void Server::updateAcceptor() {
@@ -53,9 +53,12 @@ void Server::visitor_close(const std::shared_ptr<User>& user) {
 	vistor_list_.erase(std::find(vistor_list_.begin(),vistor_list_.end(),user));
 }
 
-void Server::send(const InfoGenerator& g) {
+void Server::send() {
 	for (auto& soc : vistor_list_) {
 		soc->do_write(g.msg());
 	}
 }
 
+std::string Server::get_Appinfo(){
+    return g.getAppInfo();
+}

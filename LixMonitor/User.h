@@ -30,6 +30,7 @@ public:
 	void ws_new(std::string);
 	std::vector<std::string> ws_read(std::string&);
 	std::string ws_write(const std::string&);
+    void return_Appinfo();
 private:
 	bool started;
 	bool ws;
