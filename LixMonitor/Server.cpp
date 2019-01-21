@@ -29,7 +29,7 @@ void Server::start() {
 					soc->do_write(g.msg());
 				}
 				using namespace std::chrono_literals;
-				std::this_thread::sleep_for(1s);
+				std::this_thread::sleep_for(2s);
 			}
 		});
 	t.detach();

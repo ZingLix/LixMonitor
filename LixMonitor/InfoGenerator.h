@@ -62,7 +62,6 @@ public:
 			netpair.PushBack(rapidjson::Value(net.second.c_str(), msg.getAllocator()), msg.getAllocator());
 			msg.add("NetInfo", netpair);
 			info = msg.getString();
-			std::this_thread::sleep_for(100ms);
 		}
 	}
 
@@ -93,10 +92,11 @@ public:
 
     std::pair<std::string,std::string> getIOinfo(){
         system("rm io.info");
-        system("(iostat -x|grep vda)>>io.info");
+        system("(iostat -x 1 2|grep vda)>>io.info");
         std::string s;
         std::ifstream in("io.info");
         std::getline(in,s);
+		std::getline(in, s);
         std::vector<std::string> result;
         split_regex(result, s,boost::regex(" +"));
         return std::make_pair(result[5],result[6]);
